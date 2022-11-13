@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Livewire\Posts;
 use App\Http\Controllers\SahamController;
+use App\Http\Controllers\PrSahamController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +23,12 @@ Route::get('/', function () {
 
 Route::get('/saham', [SahamController::class, 'show_price']);
 Route::get('/saham/{symbol}', [SahamController::class, 'index']);
+
+Route::get('/proxy/{symbol}/cash', [PrSahamController::class, 'cashflow']);
+Route::get('/proxy/{symbol}/price', [PrSahamController::class, 'price']);
+Route::get('/proxy/{symbol}/profile', [PrSahamController::class, 'profile']);
+Route::get('/proxy/{symbol}/summary', [PrSahamController::class, 'summary']);
+
 
 
 Route::middleware([

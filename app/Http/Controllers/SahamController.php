@@ -27,7 +27,7 @@ class SahamController extends Controller
                       'open'=> $quote->getOpen(), 'close'=> $quote->getClose(), 
                       'low'=> $quote->getLow(), 'high'=> $quote->getHigh(), 
                       'adjClose'=> $quote->getAdjClose(), 'volume'=> $quote->getVolume()];
-            SahamPrices::create($price);
+            SahamPrices::updateOrCreate($price);
         }
         return response()->json($price);
     }
