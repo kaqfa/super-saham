@@ -2,46 +2,10 @@
 
 ### Daily Price Saham
 
-Pertama harus menambahkan requirement di composer dulu
+Update, ngga jadi pake **scheb/yahoo-finance-api** karena banyak kekurangan.
 
-```
-composer require scheb/yahoo-finance-api
-```
+Akhirnya sekarang kita menggunakan flask sebagai proxy mengambil data di YahoooFinance, karena library di Python tentang saham jauh lebih lengkap daripada yang di PHP.
 
-Siapkan model `SahamPrice` lengkap dengan migrasinya. Selanjutnya contoh penggunaan ada di controller `SahamController`.
+Kali ini kita tidak membuat model dulu, karena banyak data yang bisa dicontohkan. Langsung cek aja proof of concept kodingan di `Controllers/PrSahamController.php`. Di situ datanya langsung ditampilkan.
 
-```php
-<?php
-namespace App\Http\Controllers;
-
-use Scheb\YahooFinanceApi\ApiClient;
-use Scheb\YahooFinanceApi\ApiClientFactory;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Carbon;
-
-use App\Models\SahamPrices;
-
-class SahamController extends Controller
-{
-    public function index($symbol){
-        $symbol = strtoupper($symbol);
-        try{
-            $price = SahamPrices::where('symbol', '=', $symbol)
-                            ->whereDate('last_date', '>=', Carbon::yesterday())
-                            ->firstOrFail();
-        } catch(ModelNotFoundException $e){
-            $client = ApiClientFactory::createApiClient();
-            $quote = $client->getHistoricalQuoteData($symbol, ApiClient::INTERVAL_1_DAY, 
-                                        new \DateTime('-2 day'), new \DateTime('today'));
-            $quote = $quote[0];
-            $price = ['symbol'=>$symbol, 
-                      'last_date'=>Carbon::parse($quote->getDate())->format('Y-m-d'),
-                      'open'=> $quote->getOpen(), 'close'=> $quote->getClose(), 
-                      'low'=> $quote->getLow(), 'high'=> $quote->getHigh(), 
-                      'adjClose'=> $quote->getAdjClose(), 'volume'=> $quote->getVolume()];
-            SahamPrices::create($price);
-        }
-        return response()->json($price);
-    }
- }
-```
+Pengambilan data yang dicontohkan di situ ada 4 yaitu melalui endpoint `cash`, `price`, `summary`, dan `profile`. Selain itu seharusnya masih ada endpoint lagi yaitu: `financial`, `balance`, `income`, dan `valuation`. Apa aja isinya, silahkan dicek sendiri menggunakan Insomnia / Postman.
